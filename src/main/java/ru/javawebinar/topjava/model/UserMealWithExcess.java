@@ -19,6 +19,10 @@ public class UserMealWithExcess {
         this.excess = excess;
     }
 
+    public UserMealWithExcess(LocalDateTime dateTime, String description, int calories, boolean excess) {
+        this(dateTime, description, calories, new AtomicBoolean(excess));
+    }
+
     @Override
     public String toString() {
         return "UserMealWithExcess{" +
