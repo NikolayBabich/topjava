@@ -3,7 +3,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html lang="ru">
 <head>
-    <title>Meals</title>
+    <title>Meal list</title>
     <style>
         table {
             border-collapse: collapse;
@@ -20,7 +20,8 @@
 <h3><a href="index.html">Home</a></h3>
 <hr>
 <h2>Meals</h2>
-<table style="">
+<p><a href="meals?action=insert">Add Meal</a></p>
+<table>
     <tr style="font-weight:bold">
         <th>Date</th>
         <th>Description</th>
@@ -33,8 +34,8 @@
             <td>${DateTimeUtil.format(meal.dateTime)}</td>
             <td>${meal.description}</td>
             <td>${meal.calories}</td>
-            <td></td>
-            <td></td>
+            <td><a href="meals?action=edit&id=${meal.id}">Update</a></td>
+            <td><a href="meals?action=delete&id=${meal.id}">Delete</a></td>
         </tr>
     </c:forEach>
 </table>

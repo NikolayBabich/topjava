@@ -9,4 +9,11 @@ public class DateTimeUtil {
     public static String format(LocalDateTime localDateTime) {
         return FORMATTER.format(localDateTime);
     }
+
+    public static LocalDateTime parse(String s) {
+        if (s.isEmpty()) {
+            return null;
+        }
+        return LocalDateTime.parse(s.replace("T", " "), FORMATTER);
+    }
 }
