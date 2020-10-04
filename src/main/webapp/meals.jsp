@@ -20,7 +20,7 @@
 <h3><a href="index.html">Home</a></h3>
 <hr>
 <h2>Meals</h2>
-<p><a href="meals?action=insert">Add Meal</a></p>
+<p><a href="meals?action=edit&id=0">Add Meal</a></p>
 <table>
     <tr style="font-weight:bold">
         <th>Date</th>

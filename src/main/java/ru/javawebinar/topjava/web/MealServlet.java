@@ -1,11 +1,11 @@
 package ru.javawebinar.topjava.web;
 
 import org.slf4j.Logger;
-import ru.javawebinar.topjava.TestMealData;
 import ru.javawebinar.topjava.dao.MapMealDao;
 import ru.javawebinar.topjava.dao.MealDao;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.util.DateTimeUtil;
+import ru.javawebinar.topjava.util.MealsUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -19,38 +19,37 @@ import static org.slf4j.LoggerFactory.getLogger;
 import static ru.javawebinar.topjava.util.MealsUtil.filteredByStreams;
 
 public class MealServlet extends HttpServlet {
-    private static final String INSERT_OR_EDIT = "/editMeal.jsp";
-    private static final String LIST = "/meals.jsp";
+    private static final String INSERT_OR_EDIT = "editMeal.jsp";
+    private static final String LIST = "meals.jsp";
+    private static final String SERVLET = "meals";
     private static final Logger log = getLogger(MealServlet.class);
-    private static final MealDao dao = new MapMealDao();
+
+    private MealDao dao;
 
     @Override
     public void init() {
-        TestMealData.getTestMeals().forEach(dao::insert);
+        dao = new MapMealDao();
+        MealsUtil.getTestMeals().forEach(dao::insert);
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String forward = LIST;
         String action = request.getParameter("action");
-        if (action != null) {
-            switch (action.toLowerCase()) {
-                case "delete":
-                    dao.delete(Integer.parseInt(request.getParameter("id")));
-                    listAllUnfiltered(request);
-                    break;
-                case "edit":
-                    int id = Integer.parseInt(request.getParameter("id"));
-                    request.setAttribute("meal", dao.getById(id));
-                case "insert":
-                    forward = INSERT_OR_EDIT;
-                    break;
-                default:
-                    listAllUnfiltered(request);
+        if ("edit".equalsIgnoreCase(action)) {
+            int id = parseId(request);
+            if (id > 0) {
+                request.setAttribute("meal", dao.getById(id));
             }
+            log.debug("forwarding to {}}", INSERT_OR_EDIT);
+            request.getRequestDispatcher(INSERT_OR_EDIT).forward(request, response);
+        } else if ("delete".equalsIgnoreCase(action)) {
+            dao.delete(parseId(request));
+            log.debug("redirecting to {}}", SERVLET);
+            response.sendRedirect(SERVLET);
+        } else {
+            setAttributeAllUnfiltered(request);
+            request.getRequestDispatcher(LIST).forward(request, response);
         }
-        log.debug("forwarding to {}}", forward);
-        request.getRequestDispatcher(forward).forward(request, response);
     }
 
     @Override
@@ -67,17 +66,21 @@ public class MealServlet extends HttpServlet {
             if (idParameter == null || idParameter.isEmpty()) {
                 dao.insert(meal);
             } else {
-                meal.setId(Integer.parseInt(idParameter));
+                meal.setId(parseId(request));
                 dao.update(meal);
             }
         }
 
-        listAllUnfiltered(request);
+        setAttributeAllUnfiltered(request);
         request.getRequestDispatcher(LIST).forward(request, response);
     }
 
-    private void listAllUnfiltered(HttpServletRequest request) {
+    private void setAttributeAllUnfiltered(HttpServletRequest request) {
         request.setAttribute("meals", filteredByStreams(dao.getAll(), LocalTime.MIN, LocalTime.MAX,
-                                                        TestMealData.getCaloriesPerDay()));
+                                                        MealsUtil.getCaloriesPerDay()));
+    }
+
+    private int parseId(HttpServletRequest request) {
+        return Integer.parseInt(request.getParameter("id"));
     }
 }
