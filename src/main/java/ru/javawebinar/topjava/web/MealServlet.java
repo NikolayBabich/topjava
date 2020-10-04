@@ -47,13 +47,14 @@ public class MealServlet extends HttpServlet {
             log.debug("redirecting to {}}", SERVLET);
             response.sendRedirect(SERVLET);
         } else {
-            setAttributeAllUnfiltered(request);
+            request.setAttribute("meals", filteredByStreams(dao.getAll(), LocalTime.MIN, LocalTime.MAX,
+                                                            MealsUtil.CALORIES_PER_DAY));
             request.getRequestDispatcher(LIST).forward(request, response);
         }
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         request.setCharacterEncoding("UTF-8");
         LocalDateTime dateTime = DateTimeUtil.parse(request.getParameter("dateTime"));
         String description = request.getParameter("description");
@@ -70,14 +71,8 @@ public class MealServlet extends HttpServlet {
                 dao.update(meal);
             }
         }
-
-        setAttributeAllUnfiltered(request);
-        request.getRequestDispatcher(LIST).forward(request, response);
-    }
-
-    private void setAttributeAllUnfiltered(HttpServletRequest request) {
-        request.setAttribute("meals", filteredByStreams(dao.getAll(), LocalTime.MIN, LocalTime.MAX,
-                                                        MealsUtil.getCaloriesPerDay()));
+        log.debug("redirecting to {}}", SERVLET);
+        response.sendRedirect(SERVLET);
     }
 
     private int parseId(HttpServletRequest request) {

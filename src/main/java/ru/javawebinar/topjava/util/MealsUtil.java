@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class MealsUtil {
-    private static final int CALORIES_PER_DAY = 2000;
+    public static final int CALORIES_PER_DAY = 2000;
 
     private static final List<Meal> testMeals = Arrays.asList(
             new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Завтрак", 500),
@@ -25,10 +25,6 @@ public class MealsUtil {
             new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 13, 0), "Обед", 500),
             new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 20, 0), "Ужин", 410)
     );
-
-    public static int getCaloriesPerDay() {
-        return CALORIES_PER_DAY;
-    }
 
     public static List<Meal> getTestMeals() {
         return new ArrayList<>(testMeals);

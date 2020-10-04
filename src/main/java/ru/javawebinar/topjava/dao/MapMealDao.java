@@ -34,7 +34,7 @@ public class MapMealDao implements MealDao {
 
     @Override
     public Meal getById(int id) {
-        return meals.getOrDefault(id, null);
+        return meals.get(id);
     }
 
     @Override
