@@ -2,6 +2,7 @@ package ru.javawebinar.topjava.repository;
 
 import ru.javawebinar.topjava.model.Meal;
 
+import java.time.LocalDate;
 import java.util.Collection;
 
 public interface MealRepository {
@@ -14,5 +15,5 @@ public interface MealRepository {
     // null if not found
     Meal get(Integer userId, int id);
 
-    Collection<Meal> getAll(Integer userId);
+    Collection<Meal> getAll(Integer userId, LocalDate startDate, LocalDate endDate);
 }

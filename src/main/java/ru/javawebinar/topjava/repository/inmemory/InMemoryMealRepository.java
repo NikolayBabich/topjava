@@ -5,7 +5,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
+import ru.javawebinar.topjava.util.DateTimeUtil;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Map;
@@ -57,11 +59,12 @@ public class InMemoryMealRepository implements MealRepository {
     }
 
     @Override
-    public Collection<Meal> getAll(Integer userId) {
+    public Collection<Meal> getAll(Integer userId, LocalDate startDate, LocalDate endDate) {
         log.info("getAll");
         return repository.values().stream()
                 .filter(meal -> userId.equals(meal.getUserId()))
-                .sorted(Comparator.comparing(Meal::getDate).reversed())
+                .filter(meal -> DateTimeUtil.isInside(meal.getDate(), startDate, endDate))
+                .sorted(Comparator.comparing(Meal::getDate).reversed().thenComparing(Meal::getTime))
                 .collect(Collectors.toList());
     }
 

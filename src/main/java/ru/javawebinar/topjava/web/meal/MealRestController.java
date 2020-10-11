@@ -6,8 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealService;
+import ru.javawebinar.topjava.to.MealTo;
+import ru.javawebinar.topjava.util.MealsUtil;
 import ru.javawebinar.topjava.web.SecurityUtil;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import static ru.javawebinar.topjava.util.ValidationUtil.assureIdConsistent;
@@ -20,9 +24,27 @@ public class MealRestController {
     @Autowired
     private MealService service;
 
-    public List<Meal> getAll() {
+    public List<MealTo> getAll() {
+        return this.getFiltered(null, null, null, null);
+    }
+
+    public List<MealTo> getFiltered(LocalDate startDate, LocalDate endDate, LocalTime startTime, LocalTime endTime) {
+        if (startDate == null) {
+            startDate = LocalDate.MIN;
+        }
+        if (endDate == null) {
+            endDate = LocalDate.MAX;
+        }
+        if (startTime == null) {
+            startTime = LocalTime.MIN;
+        }
+        if (endTime == null) {
+            endTime = LocalTime.MAX;
+        }
         log.info("getAll");
-        return service.getAll(SecurityUtil.authUserId());
+        return MealsUtil.getFilteredTos(service.getAll(SecurityUtil.authUserId(), startDate, endDate),
+                                        SecurityUtil.authUserCaloriesPerDay(),
+                                        startTime, endTime);
     }
 
     public Meal get(int id) {
@@ -45,8 +67,8 @@ public class MealRestController {
     public void update(Meal meal, int id) {
         log.info("update {} with id={}", meal, id);
         assureIdConsistent(meal, id);
-        meal.setUserId(SecurityUtil.authUserId());
-        service.update(SecurityUtil.authUserId(), meal);
+        int userId = SecurityUtil.authUserId();
+        meal.setUserId(userId);
+        service.update(userId, meal);
     }
-
 }

@@ -20,7 +20,21 @@
 <section>
     <h3><a href="index.html">Home</a></h3>
     <hr/>
-    <h2>Meals</h2>
+    <h2>My Meals</h2>
+    <form method="post" action="meals">
+        <input type="hidden" name="filter">
+        <label for="startDate">От даты (включая)</label>
+        <input type="date" name="startDate" id="startDate" value="${startDate}" autocomplete="off">
+        <label for="endDate">До даты (включая)</label>
+        <input type="date" name="endDate" id="endDate" value="${endDate}" autocomplete="off">
+        <br>
+        <label for="startTime">От времени (включая)</label>
+        <input type="time" name="startTime" id="startTime" value="${startTime}" autocomplete="off">
+        <label for="endTime">До времени (исключая)</label>
+        <input type="time" name="endTime" id="endTime" value="${endTime}" autocomplete="off">
+        <br>
+        <button type="submit">Отфильтровать</button>
+    </form>
     <a href="meals?action=create">Add Meal</a>
     <br><br>
     <table border="1" cellpadding="8" cellspacing="0">
