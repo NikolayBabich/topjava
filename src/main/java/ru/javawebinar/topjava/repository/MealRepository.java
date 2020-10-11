@@ -6,13 +6,13 @@ import java.util.Collection;
 
 public interface MealRepository {
     // null if not found, when updated
-    Meal save(Meal meal);
+    Meal save(Integer userId, Meal meal);
 
     // false if not found
-    boolean delete(int id);
+    boolean delete(Integer userId, int id);
 
     // null if not found
-    Meal get(int id);
+    Meal get(Integer userId, int id);
 
-    Collection<Meal> getAll();
+    Collection<Meal> getAll(Integer userId);
 }
