@@ -29,7 +29,12 @@ public class MealServlet extends HttpServlet {
     public void init() {
         appCtx = new ClassPathXmlApplicationContext("spring/spring-app.xml");
         controller = appCtx.getBean(MealRestController.class);
-        MealsUtil.meals.forEach(controller::create);
+
+        // for testing
+        MealsUtil.mealsUser1.forEach(controller::create);
+        SecurityUtil.setAuthUserId(2);
+        MealsUtil.mealsUser2.forEach(controller::create);
+        SecurityUtil.setAuthUserId(1);
     }
 
     @Override
@@ -38,18 +43,8 @@ public class MealServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         request.setCharacterEncoding("UTF-8");
-
-        if (request.getParameterMap().containsKey("filter")) {
-            StringBuffer getParameters = new StringBuffer("?action=filter");
-            getParameters.append("&startDate=").append(request.getParameter("startDate"));
-            getParameters.append("&endDate=").append(request.getParameter("endDate"));
-            getParameters.append("&startTime=").append(request.getParameter("startTime"));
-            getParameters.append("&endTime=").append(request.getParameter("endTime"));
-            response.sendRedirect("meals" + getParameters);
-            return;
-        }
 
         String id = request.getParameter("id");
         Meal meal = new Meal(id.isEmpty() ? null : Integer.valueOf(id),
