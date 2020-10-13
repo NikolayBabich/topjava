@@ -24,14 +24,14 @@
     <form method="get" action="meals">
         <input type="hidden" name="action" value="filter">
         <label for="startDate">From date (inclusive)</label>
-        <input type="date" name="startDate" id="startDate" value="${startDate}" autocomplete="off">
+        <input type="date" name="startDate" id="startDate" value="${param.startDate}" autocomplete="off">
         <label for="endDate">To date (inclusive)</label>
-        <input type="date" name="endDate" id="endDate" value="${endDate}" autocomplete="off">
+        <input type="date" name="endDate" id="endDate" value="${param.endDate}" autocomplete="off">
         <br>
         <label for="startTime">From time (inclusive)</label>
-        <input type="time" name="startTime" id="startTime" value="${startTime}" autocomplete="off">
+        <input type="time" name="startTime" id="startTime" value="${param.startTime}" autocomplete="off">
         <label for="endTime">To time (exclusive)</label>
-        <input type="time" name="endTime" id="endTime" value="${endTime}" autocomplete="off">
+        <input type="time" name="endTime" id="endTime" value="${param.endTime}" autocomplete="off">
         <br>
         <button type="submit">Filter</button>
     </form>

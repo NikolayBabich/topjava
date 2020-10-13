@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -28,13 +29,13 @@ public class MealsUtil {
     );
 
     public static final List<Meal> mealsUser2 = Arrays.asList(
-            new Meal(LocalDateTime.now().minusDays(1), "Завтрак_Вчера", 1500),
-            new Meal(LocalDateTime.now().minusDays(1), "Обед_Вчера", 600),
-            new Meal(LocalDateTime.now().minusDays(1), "Ужин_Вчера", 400),
-            new Meal(LocalDateTime.now().plusDays(1), "Еда на граничное значение_Завтра", 100),
-            new Meal(LocalDateTime.now().plusDays(1), "Завтрак_Завтра", 1000),
-            new Meal(LocalDateTime.now().plusDays(1), "Обед_Завтра", 200),
-            new Meal(LocalDateTime.now().plusDays(1), "Ужин_Завтра", 710)
+            new Meal(LocalDateTime.now().minusDays(1).truncatedTo(ChronoUnit.MINUTES), "Завтрак_Вчера", 1500),
+            new Meal(LocalDateTime.now().minusDays(1).truncatedTo(ChronoUnit.MINUTES), "Обед_Вчера", 600),
+            new Meal(LocalDateTime.now().minusDays(1).truncatedTo(ChronoUnit.MINUTES), "Ужин_Вчера", 400),
+            new Meal(LocalDateTime.now().plusDays(1).truncatedTo(ChronoUnit.MINUTES), "Еда на граничное значение_Завтра", 100),
+            new Meal(LocalDateTime.now().plusDays(1).truncatedTo(ChronoUnit.MINUTES), "Завтрак_Завтра", 1000),
+            new Meal(LocalDateTime.now().plusDays(1).truncatedTo(ChronoUnit.MINUTES), "Обед_Завтра", 200),
+            new Meal(LocalDateTime.now().plusDays(1).truncatedTo(ChronoUnit.MINUTES), "Ужин_Завтра", 710)
     );
 
     public static List<MealTo> getTos(Collection<Meal> meals, int caloriesPerDay) {

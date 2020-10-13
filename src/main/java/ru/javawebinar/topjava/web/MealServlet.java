@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.util.StringUtils;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.util.MealsUtil;
 import ru.javawebinar.topjava.web.meal.MealRestController;
@@ -69,19 +70,15 @@ public class MealServlet extends HttpServlet {
         switch (action == null ? "all" : action) {
             case "filter":
                 String startDate = request.getParameter("startDate");
-                request.setAttribute("startDate", startDate);
                 String endDate = request.getParameter("endDate");
-                request.setAttribute("endDate", endDate);
                 String startTime = request.getParameter("startTime");
-                request.setAttribute("startTime", startTime);
                 String endTime = request.getParameter("endTime");
-                request.setAttribute("endTime", endTime);
-
-                request.setAttribute("meals",
-                                     controller.getFiltered(startDate.isEmpty() ? null : LocalDate.parse(startDate),
-                                                            endDate.isEmpty() ? null : LocalDate.parse(endDate),
-                                                            startTime.isEmpty() ? null : LocalTime.parse(startTime),
-                                                            endTime.isEmpty() ? null : LocalTime.parse(endTime)));
+                log.info("Filter");
+                request.setAttribute("meals", controller.getFiltered(
+                        StringUtils.isEmpty(startDate) ? null : LocalDate.parse(startDate),
+                        StringUtils.isEmpty(endDate) ? null : LocalDate.parse(endDate),
+                        StringUtils.isEmpty(startTime) ? null : LocalTime.parse(startTime),
+                        StringUtils.isEmpty(endTime) ? null : LocalTime.parse(endTime)));
                 request.getRequestDispatcher("/meals.jsp").forward(request, response);
                 break;
             case "delete":
