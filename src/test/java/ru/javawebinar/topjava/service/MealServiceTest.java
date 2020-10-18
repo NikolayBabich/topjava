@@ -16,13 +16,13 @@ import java.time.Month;
 import java.util.List;
 
 import static org.junit.Assert.assertThrows;
-import static ru.javawebinar.topjava.MealTestData.adminMeals;
+import static ru.javawebinar.topjava.MealTestData.MEAL_3;
+import static ru.javawebinar.topjava.MealTestData.MEAL_7;
 import static ru.javawebinar.topjava.MealTestData.assertMatchByAllFields;
-import static ru.javawebinar.topjava.MealTestData.getAllSorted;
-import static ru.javawebinar.topjava.MealTestData.getFilteredByDate;
 import static ru.javawebinar.topjava.MealTestData.getNew;
 import static ru.javawebinar.topjava.MealTestData.getUpdated;
-import static ru.javawebinar.topjava.MealTestData.userMeals;
+import static ru.javawebinar.topjava.MealTestData.userMealsFilteredAndSorted;
+import static ru.javawebinar.topjava.MealTestData.userMealsSorted;
 import static ru.javawebinar.topjava.UserTestData.ADMIN_ID;
 import static ru.javawebinar.topjava.UserTestData.USER_ID;
 
@@ -40,46 +40,43 @@ public class MealServiceTest {
         SLF4JBridgeHandler.install();
     }
 
-    public static final int BORDER_TIME_MEAL_ID = 100005;
-    public static final int BORDER_TIME_MEAL_INDEX = 3;
-
     @Autowired
     private MealService service;
 
     @Test
     public void get() {
-        Meal meal = service.get(BORDER_TIME_MEAL_ID, USER_ID);
-        assertMatchByAllFields(meal, userMeals.get(BORDER_TIME_MEAL_INDEX));
+        Meal meal = service.get(MEAL_3.getId(), USER_ID);
+        assertMatchByAllFields(meal, MEAL_3);
     }
 
     @Test
     public void getNotOwned() {
-        assertThrows(NotFoundException.class, () -> service.get(adminMeals.get(0).getId(), USER_ID));
+        assertThrows(NotFoundException.class, () -> service.get(MEAL_7.getId(), USER_ID));
     }
 
     @Test
     public void delete() {
-        service.delete(BORDER_TIME_MEAL_ID, USER_ID);
-        assertThrows(NotFoundException.class, () -> service.get(BORDER_TIME_MEAL_ID, USER_ID));
+        service.delete(MEAL_3.getId(), USER_ID);
+        assertThrows(NotFoundException.class, () -> service.get(MEAL_3.getId(), USER_ID));
     }
 
     @Test
     public void deleteNotOwned() {
-        assertThrows(NotFoundException.class, () -> service.delete(adminMeals.get(0).getId(), USER_ID));
+        assertThrows(NotFoundException.class, () -> service.delete(MEAL_7.getId(), USER_ID));
     }
 
     @Test
     public void getBetweenInclusive() {
-        List<Meal> mealsFiltered = service.getBetweenInclusive(LocalDate.of(2020, Month.JANUARY, 30),
+        List<Meal> mealsFiltered = service.getBetweenInclusive(LocalDate.of(2020, Month.JANUARY, 1),
                                                                LocalDate.of(2020, Month.JANUARY, 30),
                                                                USER_ID);
-        assertMatchByAllFields(mealsFiltered, getFilteredByDate());
+        assertMatchByAllFields(mealsFiltered, userMealsFilteredAndSorted);
     }
 
     @Test
     public void getAll() {
         List<Meal> all = service.getAll(USER_ID);
-        assertMatchByAllFields(all, getAllSorted());
+        assertMatchByAllFields(all, userMealsSorted);
     }
 
     @Test

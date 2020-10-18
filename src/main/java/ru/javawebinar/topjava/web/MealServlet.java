@@ -21,7 +21,6 @@ import static ru.javawebinar.topjava.util.DateTimeUtil.parseLocalDate;
 import static ru.javawebinar.topjava.util.DateTimeUtil.parseLocalTime;
 
 public class MealServlet extends HttpServlet {
-
     private ConfigurableApplicationContext springContext;
     private MealRestController mealController;
 
@@ -38,7 +37,7 @@ public class MealServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         request.setCharacterEncoding("UTF-8");
         Meal meal = new Meal(
                 LocalDateTime.parse(request.getParameter("dateTime")),
