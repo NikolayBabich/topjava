@@ -19,7 +19,7 @@ import static ru.javawebinar.topjava.MealTestData.ADMIN_MEAL_ID;
 import static ru.javawebinar.topjava.MealTestData.MEAL1_ID;
 import static ru.javawebinar.topjava.MealTestData.MEAL_MATCHER;
 import static ru.javawebinar.topjava.MealTestData.NOT_FOUND;
-import static ru.javawebinar.topjava.MealTestData.admin_meal1;
+import static ru.javawebinar.topjava.MealTestData.adminMeal1;
 import static ru.javawebinar.topjava.MealTestData.getNew;
 import static ru.javawebinar.topjava.MealTestData.getUpdated;
 import static ru.javawebinar.topjava.MealTestData.meal1;
@@ -76,7 +76,7 @@ public class MealServiceTest {
     @Test
     public void get() throws Exception {
         Meal actual = service.get(ADMIN_MEAL_ID, ADMIN_ID);
-        MEAL_MATCHER.assertMatch(actual, admin_meal1);
+        MEAL_MATCHER.assertMatch(actual, adminMeal1);
     }
 
     @Test
