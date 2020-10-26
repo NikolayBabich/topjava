@@ -55,31 +55,24 @@ public class MealServiceTest {
     @Rule
     public Stopwatch stopwatch = new Stopwatch() {
         @Override
-        protected void succeeded(long nanos, Description description) {
+        protected void finished(long nanos, Description description) {
             String methodName = description.getMethodName();
             long millis = TimeUnit.NANOSECONDS.toMillis(nanos);
             testInfo.put(methodName, millis);
-            log.info("Test \"{}\" passed in {} ms", methodName, millis);
-        }
-
-        @Override
-        protected void failed(long nanos, Throwable e, Description description) {
-            String methodName = description.getMethodName();
-            long millis = TimeUnit.NANOSECONDS.toMillis(nanos);
-            testInfo.put(methodName, -millis);
-            log.info("Test \"{}\" failed in {} ms", methodName, millis);
+            log.info("Test \"{}\" finished in {} ms", methodName, millis);
         }
     };
 
     @AfterClass
     public static void getTestInfo() {
-        testInfo.forEach((test, millis) -> {
-            if (millis > 0) {
-                log.info("Test \"{}\" passed in {} ms", test, millis);
-            } else {
-                log.info("Test \"{}\" failed in {} ms", test, -millis);
-            }
+        StringBuilder sb = new StringBuilder();
+        testInfo.forEach((name, millis) -> {
+            sb.append(String.format("%24s", name))
+                    .append(" - ")
+                    .append(String.format("%3d", millis))
+                    .append(" ms\n");
         });
+        log.info("\n*****ALL TESTS INFO*****\n{}************************", sb.toString());
     }
 
     @Test
