@@ -35,8 +35,7 @@ import static ru.javawebinar.topjava.UserTestData.user;
 @RunWith(SpringRunner.class)
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 @ActiveProfiles(resolver = ActiveDbProfileResolver.class)
-public class UserServiceTest {
-
+public abstract class UserServiceTest extends AbstractServiceTest {
     @Autowired
     private UserService service;
 
@@ -44,7 +43,7 @@ public class UserServiceTest {
     private CacheManager cacheManager;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         cacheManager.getCache("users").clear();
     }
 
