@@ -3,6 +3,7 @@ package ru.javawebinar.topjava.web;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.util.StringUtils;
+import ru.javawebinar.topjava.Profiles;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.web.meal.MealRestController;
 
@@ -27,6 +28,7 @@ public class MealServlet extends HttpServlet {
 
     @Override
     public void init() {
+        System.setProperty("spring.profiles.active", Profiles.getActiveDbProfile() + "," + Profiles.REPOSITORY_IMPLEMENTATION);
         springContext = new ClassPathXmlApplicationContext("spring/spring-app.xml", "spring/spring-db.xml");
         mealController = springContext.getBean(MealRestController.class);
     }
@@ -38,14 +40,14 @@ public class MealServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         request.setCharacterEncoding("UTF-8");
         Meal meal = new Meal(
                 LocalDateTime.parse(request.getParameter("dateTime")),
                 request.getParameter("description"),
                 Integer.parseInt(request.getParameter("calories")));
 
-        if (StringUtils.isEmpty(request.getParameter("id"))) {
+        if (!StringUtils.hasText(request.getParameter("id"))) {
             mealController.create(meal);
         } else {
             mealController.update(meal, getId(request));

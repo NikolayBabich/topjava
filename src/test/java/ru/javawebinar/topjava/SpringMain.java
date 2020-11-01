@@ -16,6 +16,7 @@ import java.util.List;
 
 public class SpringMain {
     public static void main(String[] args) {
+        System.setProperty("spring.profiles.active", Profiles.getActiveDbProfile() + "," + Profiles.REPOSITORY_IMPLEMENTATION);
         // java 7 automatic resource management (ARM)
         try (ConfigurableApplicationContext appCtx = new ClassPathXmlApplicationContext("spring/spring-app.xml", "spring/inmemory.xml")) {
             System.out.println("Bean definition names: " + Arrays.toString(appCtx.getBeanDefinitionNames()));

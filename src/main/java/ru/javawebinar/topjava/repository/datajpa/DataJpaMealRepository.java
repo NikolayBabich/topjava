@@ -40,6 +40,13 @@ public class DataJpaMealRepository implements MealRepository {
         return crudRepository.findByIdAndUserId(id, userId);
     }
 
+/*    public Meal getWith(int id, int userId) {
+        Meal meal = get(id, userId);
+        meal.setUser((User) Hibernate.unproxy(meal.getUser()));
+        return meal;
+    }
+*/
+
     @Override
     public List<Meal> getAll(int userId) {
         return crudRepository.findAllByUserIdOrderByDateTimeDesc(userId);
