@@ -16,9 +16,17 @@ import static ru.javawebinar.topjava.util.ValidationUtil.checkNotFoundWithId;
 @Service
 public class MealService {
 
-    private final MealRepository repository;
+    private MealRepository repository;
 
     public MealService(MealRepository repository) {
+        this.repository = repository;
+    }
+
+    public MealRepository getRepository() {
+        return repository;
+    }
+
+    public void setRepository(MealRepository repository) {
         this.repository = repository;
     }
 
@@ -46,5 +54,9 @@ public class MealService {
     public Meal create(Meal meal, int userId) {
         Assert.notNull(meal, "meal must not be null");
         return repository.save(meal, userId);
+    }
+
+    public Meal getWith(int id, int userId) {
+        return checkNotFoundWithId(repository.getWith(id, userId), id);
     }
 }

@@ -1,8 +1,11 @@
 package ru.javawebinar.topjava.repository.datajpa;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.topjava.model.Meal;
+import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.MealRepository;
 
 import java.time.LocalDateTime;
@@ -21,6 +24,7 @@ public class DataJpaMealRepository implements MealRepository {
     }
 
     @Override
+    @Transactional
     public Meal save(Meal meal, int userId) {
         //noinspection ConstantConditions
         if (!meal.isNew() && get(meal.getId(), userId) == null) {
@@ -36,27 +40,26 @@ public class DataJpaMealRepository implements MealRepository {
     }
 
     @Override
+    @Transactional
     public Meal get(int id, int userId) {
-        return crudRepository.findByIdAndUserId(id, userId);
+        User user = userRepository.getOne(userId);
+        return crudRepository.findByIdAndUser(id, user);
     }
-
-/*    public Meal getWith(int id, int userId) {
-        Meal meal = get(id, userId);
-        meal.setUser((User) Hibernate.unproxy(meal.getUser()));
-        return meal;
-    }
-*/
 
     @Override
+    @Transactional
     public List<Meal> getAll(int userId) {
-        return crudRepository.findAllByUserIdOrderByDateTimeDesc(userId);
+        User user = userRepository.getOne(userId);
+        return crudRepository.findAllByUser(user, Sort.by("dateTime").descending());
     }
 
     @Override
     public List<Meal> getBetweenHalfOpen(LocalDateTime startDateTime, LocalDateTime endDateTime, int userId) {
-/*        return crudRepository.findAllByUserIdAndDateTimeGreaterThanEqualAndDateTimeBeforeOrderByDateTimeDesc(
-                userId, startDateTime, endDateTime);
-*/
         return crudRepository.findAllBetweenInclusive(userId, startDateTime, endDateTime);
+    }
+
+    @Override
+    public Meal getWith(int id, int userId) {
+        return crudRepository.getWith(id, userId);
     }
 }

@@ -20,4 +20,8 @@ public interface MealRepository {
 
     // ORDERED dateTime desc
     List<Meal> getBetweenHalfOpen(LocalDateTime startDateTime, LocalDateTime endDateTime, int userId);
+
+    default Meal getWith(int id, int userId) {
+        throw new UnsupportedOperationException("Enabled only through Spring Data JPA");
+    }
 }
