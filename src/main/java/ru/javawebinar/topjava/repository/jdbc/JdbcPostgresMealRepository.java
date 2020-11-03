@@ -11,13 +11,12 @@ import java.time.LocalDateTime;
 
 @Profile(Profiles.POSTGRES_DB)
 @Repository
-public class JdbcPostgresMealRepository extends JdbcMealRepository {
+public class JdbcPostgresMealRepository extends JdbcMealRepository<LocalDateTime> {
     @Autowired
     public JdbcPostgresMealRepository(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         super(jdbcTemplate, namedParameterJdbcTemplate);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     protected LocalDateTime convertDateTime(LocalDateTime dateTime) {
         return dateTime;

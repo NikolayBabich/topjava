@@ -17,9 +17,9 @@ public interface CrudMealRepository extends JpaRepository<Meal, Integer> {
     @Transactional
     @Modifying
     @Query("DELETE FROM Meal m WHERE m.id = :id AND m.user.id = :userId")
-    int delete(@Param("id") Integer id, @Param("userId") Integer userId);
+    int delete(@Param("id") int id, @Param("userId") int userId);
 
-    Meal findByIdAndUser(Integer id, User userId);
+    Meal findByIdAndUser(int id, User user);
 
     List<Meal> findAllByUser(User user, Sort sort);
 
@@ -30,16 +30,16 @@ public interface CrudMealRepository extends JpaRepository<Meal, Integer> {
                      AND (m.dateTime >= :startDateTime AND m.dateTime < :endDateTime) 
             ORDER BY m.dateTime DESC
             """)
-    List<Meal> findAllBetweenInclusive(@Param("userId") Integer userId,
+    List<Meal> findAllBetweenInclusive(@Param("userId") int userId,
                                        @Param("startDateTime") LocalDateTime startDateTime,
                                        @Param("endDateTime") LocalDateTime endDateTime);
 
     @Query("""
             SELECT m 
               FROM Meal m 
-                   INNER JOIN FETCH m.user
+                   INNER JOIN FETCH m.user 
              WHERE m.id = :id 
-                   AND m.user.id = :userId 
+                   AND m.user.id = :userId
             """)
-    Meal getWith(@Param("id") Integer id, @Param("userId") Integer userId);
+    Meal getWithUser(@Param("id") int id, @Param("userId") int userId);
 }

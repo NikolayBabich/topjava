@@ -14,14 +14,11 @@ import java.util.List;
 @Repository
 public class DataJpaMealRepository implements MealRepository {
 
-    private final CrudMealRepository crudRepository;
+    @Autowired
+    private CrudMealRepository crudRepository;
 
     @Autowired
     private CrudUserRepository userRepository;
-
-    public DataJpaMealRepository(CrudMealRepository crudRepository) {
-        this.crudRepository = crudRepository;
-    }
 
     @Override
     @Transactional
@@ -40,14 +37,12 @@ public class DataJpaMealRepository implements MealRepository {
     }
 
     @Override
-    @Transactional
     public Meal get(int id, int userId) {
         User user = userRepository.getOne(userId);
         return crudRepository.findByIdAndUser(id, user);
     }
 
     @Override
-    @Transactional
     public List<Meal> getAll(int userId) {
         User user = userRepository.getOne(userId);
         return crudRepository.findAllByUser(user, Sort.by("dateTime").descending());
@@ -59,7 +54,7 @@ public class DataJpaMealRepository implements MealRepository {
     }
 
     @Override
-    public Meal getWith(int id, int userId) {
-        return crudRepository.getWith(id, userId);
+    public Meal getWithUser(int id, int userId) {
+        return crudRepository.getWithUser(id, userId);
     }
 }
