@@ -1,6 +1,7 @@
 package ru.javawebinar.topjava.repository.jdbc;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -12,12 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.UserRepository;
+import ru.javawebinar.topjava.util.ValidationUtil;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import javax.validation.Validation;
 import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -29,6 +27,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Repository
 @Transactional(readOnly = true)
@@ -40,7 +39,8 @@ public class JdbcUserRepository implements UserRepository {
 
     private final SimpleJdbcInsert insertUser;
 
-    private final Validator validator;
+    @Autowired
+    private Validator validator;
 
     @Autowired
     public JdbcUserRepository(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
@@ -50,23 +50,19 @@ public class JdbcUserRepository implements UserRepository {
 
         this.jdbcTemplate = jdbcTemplate;
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
-        ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
-        validator = validatorFactory.getValidator();
     }
 
     @Override
     @Transactional
     public User save(User user) {
-        BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(user);
-        Set<ConstraintViolation<User>> violations = validator.validate(user);
-        if (!violations.isEmpty()) {
-            throw new ConstraintViolationException(violations);
-        }
+        ValidationUtil.validate(validator, user);
 
+        BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(user);
+
+        Integer userId;
         if (user.isNew()) {
-            Number newKey = insertUser.executeAndReturnKey(parameterSource);
-            batchInsertRoles(user, (Integer) newKey);
-            user.setId(newKey.intValue());
+            userId = (Integer) insertUser.executeAndReturnKey(parameterSource);
+            user.setId(userId);
         } else {
             if (namedParameterJdbcTemplate.update(
                     """
@@ -76,8 +72,10 @@ public class JdbcUserRepository implements UserRepository {
                             """, parameterSource) == 0) {
                 return null;
             }
-            var userId = user.getId();
+            userId = user.getId();
             jdbcTemplate.update("DELETE FROM user_roles WHERE user_id = ?", userId);
+        }
+        if (!user.getRoles().isEmpty()) {
             batchInsertRoles(user, userId);
         }
         return user;
@@ -114,10 +112,10 @@ public class JdbcUserRepository implements UserRepository {
                 """
                         SELECT * 
                           FROM users AS u
-                               INNER JOIN user_roles AS ur ON u.id = ur.user_id 
+                               LEFT JOIN user_roles AS ur ON u.id = ur.user_id 
                          WHERE id = ?
                         """, getRowMapper(), id);
-        return getSingleResult(users);
+        return DataAccessUtils.singleResult(removeDuplicates(users));
     }
 
     @Override
@@ -126,11 +124,12 @@ public class JdbcUserRepository implements UserRepository {
                 """
                         SELECT * 
                           FROM users AS u
-                               INNER JOIN user_roles AS ur ON u.id = ur.user_id 
+                               LEFT JOIN user_roles AS ur ON u.id = ur.user_id 
                          WHERE email = ?
                         """, getRowMapper(), email);
-        return getSingleResult(users);
+        return DataAccessUtils.singleResult(removeDuplicates(users));
     }
+
 
     @Override
     public List<User> getAll() {
@@ -138,8 +137,8 @@ public class JdbcUserRepository implements UserRepository {
                 """
                           SELECT *
                             FROM users AS u
-                                 INNER JOIN user_roles AS ur ON u.id = ur.user_id 
-                        ORDER BY email, name 
+                                 LEFT JOIN user_roles AS ur ON u.id = ur.user_id 
+                        ORDER BY name, email  
                         """, getRowMapper()));
         return new ArrayList<>(users);
     }
@@ -163,14 +162,16 @@ public class JdbcUserRepository implements UserRepository {
                     user.setRoles(new HashSet<>());
                     users.put(user.getId(), user);
                 }
-                Role role = Role.valueOf(rs.getString("role"));
-                user.getRoles().add(role);
+                String roleName = rs.getString("role");
+                if (roleName != null) {
+                    user.getRoles().add(Role.valueOf(roleName));
+                }
                 return user;
             }
         };
     }
 
-    private User getSingleResult(List<User> users) {
-        return (users.size() > 0) ? users.get(0) : null;
+    private List<User> removeDuplicates(List<User> users) {
+        return users.stream().distinct().collect(Collectors.toList());
     }
 }
