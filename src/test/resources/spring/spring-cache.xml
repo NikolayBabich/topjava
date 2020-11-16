@@ -8,11 +8,10 @@
          http://www.springframework.org/schema/cache
          http://www.springframework.org/schema/cache/spring-cache.xsd">
 
+    <cache:annotation-driven cache-manager="noOpCacheManager"/>
+    <bean id="noOpCacheManager" class="org.springframework.cache.support.NoOpCacheManager"/>
+
     <beans profile="datajpa, jpa">
-        <cache:annotation-driven cache-manager="noOpCacheManager"/>
-
-        <bean id="noOpCacheManager" class="org.springframework.cache.support.NoOpCacheManager"/>
-
         <bean class="org.springframework.beans.factory.config.PropertyOverrideConfigurer"
               p:location="cache/cache.properties"/>
     </beans>

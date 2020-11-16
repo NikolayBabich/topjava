@@ -5,6 +5,7 @@ import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import ru.javawebinar.topjava.model.Meal;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,15 +19,16 @@ import static ru.javawebinar.topjava.util.DateTimeUtil.parseLocalDate;
 import static ru.javawebinar.topjava.util.DateTimeUtil.parseLocalTime;
 
 @Controller
+@RequestMapping("/meals")
 public class JspMealController extends AbstractMealController {
 
-    @GetMapping("/meals")
+    @GetMapping
     public String getAll(Model model) {
         model.addAttribute("meals", super.getAll());
         return "/meals";
     }
 
-    @PostMapping("/meals")
+    @PostMapping
     public String update(HttpServletRequest request, Model model) {
         String idParam = request.getParameter("id");
         int id = (idParam == null) ? 0 : Integer.parseInt(idParam);
@@ -51,14 +53,14 @@ public class JspMealController extends AbstractMealController {
         return "redirect:/meals";
     }
 
-    @GetMapping("/meals/delete")
+    @GetMapping("/delete")
     public String delete(HttpServletRequest request) {
         String paramId = Objects.requireNonNull(request.getParameter("id"));
         super.delete(Integer.parseInt(paramId));
         return "redirect:/meals";
     }
 
-    @GetMapping("/meals/filter")
+    @GetMapping("/filter")
     public String filter(HttpServletRequest request, Model model) {
         LocalDate startDate = parseLocalDate(request.getParameter("startDate"));
         LocalDate endDate = parseLocalDate(request.getParameter("endDate"));

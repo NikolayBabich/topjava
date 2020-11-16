@@ -59,9 +59,9 @@ public class JdbcUserRepository implements UserRepository {
 
         BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(user);
 
-        Integer userId;
+        int userId;
         if (user.isNew()) {
-            userId = (Integer) insertUser.executeAndReturnKey(parameterSource);
+            userId = insertUser.executeAndReturnKey(parameterSource).intValue();
             user.setId(userId);
         } else {
             if (namedParameterJdbcTemplate.update(
@@ -81,7 +81,7 @@ public class JdbcUserRepository implements UserRepository {
         return user;
     }
 
-    private void batchInsertRoles(User user, Integer userId) {
+    private void batchInsertRoles(User user, int userId) {
         jdbcTemplate.batchUpdate(
                 "INSERT INTO user_roles VALUES (?, ?)",
                 new BatchPreparedStatementSetter() {

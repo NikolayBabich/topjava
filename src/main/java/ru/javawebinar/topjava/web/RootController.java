@@ -16,19 +16,19 @@ public class RootController {
 
     @GetMapping("/")
     public String root() {
-        return "index";
+        return "/index";
     }
 
     @GetMapping("/users")
     public String getUsers(Model model) {
         model.addAttribute("users", service.getAll());
-        return "users";
+        return "/users";
     }
 
     @PostMapping("/users")
     public String setUser(HttpServletRequest request) {
         int userId = Integer.parseInt(request.getParameter("userId"));
         SecurityUtil.setAuthUserId(userId);
-        return "redirect:meals";
+        return "redirect:/meals";
     }
 }
