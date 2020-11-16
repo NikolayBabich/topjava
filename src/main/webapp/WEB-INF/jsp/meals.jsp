@@ -32,7 +32,7 @@
         <button type="submit"><spring:message code="meal.filter"/></button>
     </form>
     <hr/>
-    <form method="post" action="meals">
+    <form method="get" action="meals/mealForm">
         <input type="submit" value="<spring:message code="meal.add"/>">
     </form>
     <br><br>
@@ -53,7 +53,7 @@
                 <td>${meal.description}</td>
                 <td>${meal.calories}</td>
                 <td>
-                    <form method="post" action="meals">
+                    <form method="get" action="meals/mealForm">
                         <input type="hidden" name="id" value="${meal.id}">
                         <input type="submit" value="<spring:message code="common.update"/>">
                     </form>

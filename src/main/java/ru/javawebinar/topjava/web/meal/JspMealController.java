@@ -28,7 +28,7 @@ public class JspMealController extends AbstractMealController {
         return "/meals";
     }
 
-    @PostMapping
+    @GetMapping("/mealForm")
     public String update(HttpServletRequest request, Model model) {
         String idParam = request.getParameter("id");
         int id = (idParam == null) ? 0 : Integer.parseInt(idParam);
