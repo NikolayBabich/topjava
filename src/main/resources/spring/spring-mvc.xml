@@ -24,9 +24,11 @@
     </mvc:annotation-driven>
 
     <bean id="conversionService" class="org.springframework.format.support.FormattingConversionServiceFactoryBean">
-        <property name="registerDefaultFormatters" value="false"/>
         <property name="formatters">
-            <bean class="ru.javawebinar.topjava.util.NullableLocalDateTimeAnnotationFormatterFactory"/>
+            <set>
+                <bean class="ru.javawebinar.topjava.util.NullableLocalDateFormatter"/>
+                <bean class="ru.javawebinar.topjava.util.NullableLocalTimeFormatter"/>
+            </set>
         </property>
     </bean>
 

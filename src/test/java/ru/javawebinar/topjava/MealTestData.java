@@ -9,9 +9,11 @@ import java.util.List;
 
 import static java.time.LocalDateTime.of;
 import static ru.javawebinar.topjava.model.AbstractBaseEntity.START_SEQ;
+import static ru.javawebinar.topjava.util.MealsUtil.createTo;
 
 public class MealTestData {
     public static final TestMatcher<Meal> MEAL_MATCHER = TestMatcher.usingIgnoringFieldsComparator(Meal.class, "user");
+    public static final TestMatcher<MealTo> MEAL_TO_MATCHER = TestMatcher.usingIgnoringFieldsComparator(MealTo.class);
 
     public static final int NOT_FOUND = 10;
     public static final int MEAL1_ID = START_SEQ + 2;
@@ -28,10 +30,10 @@ public class MealTestData {
     public static final Meal adminMeal2 = new Meal(ADMIN_MEAL_ID + 1, of(2020, Month.JANUARY, 31, 21, 0), "Админ ужин", 1500);
 
     public static final List<Meal> meals = List.of(meal7, meal6, meal5, meal4, meal3, meal2, meal1);
-    public static final List<MealTo> mealTos = List.of(new MealTo(meal7, true), new MealTo(meal6, true),
-                                                       new MealTo(meal5, true), new MealTo(meal4, true),
-                                                       new MealTo(meal3, false), new MealTo(meal2, false),
-                                                       new MealTo(meal1, false));
+    public static final List<MealTo> mealTos = List.of(createTo(meal7, true), createTo(meal6, true),
+                                                       createTo(meal5, true), createTo(meal4, true),
+                                                       createTo(meal3, false), createTo(meal2, false),
+                                                       createTo(meal1, false));
 
     public static Meal getNew() {
         return new Meal(null, of(2020, Month.FEBRUARY, 1, 18, 0), "Созданный ужин", 300);
