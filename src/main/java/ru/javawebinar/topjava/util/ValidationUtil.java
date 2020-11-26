@@ -11,7 +11,6 @@ import javax.validation.ValidatorFactory;
 import java.util.Set;
 
 public class ValidationUtil {
-
     private static final Validator validator;
 
     static {
