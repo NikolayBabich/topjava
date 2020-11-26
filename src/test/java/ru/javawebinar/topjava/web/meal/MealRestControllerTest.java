@@ -56,8 +56,7 @@ class MealRestControllerTest extends AbstractControllerTest {
     @Test
     void update() throws Exception {
         Meal updated = getUpdated();
-        perform(MockMvcRequestBuilders.put(REST_URL + MEAL1_ID)
-                                      .contentType(MediaType.APPLICATION_JSON)
+        perform(MockMvcRequestBuilders.put(REST_URL + MEAL1_ID).contentType(MediaType.APPLICATION_JSON)
                                       .content(JsonUtil.writeValue(updated)))
                 .andExpect(status().isNoContent());
 
@@ -88,17 +87,19 @@ class MealRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void filter() throws Exception {
+    void getBetween() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL + "filter")
-                                      .param("startDate", "2020-01-30").param("startTime", "07:00")
-                                      .param("endDate", "2020-01-31").param("endTime", "11:00"))
-                .andDo(print())
+                                      .param("startDate", "2020-01-30")
+                                      .param("startTime", "07:00")
+                                      .param("endDate", "2020-01-31")
+                                      .param("endTime", "11:00"))
                 .andExpect(status().isOk())
+                .andDo(print())
                 .andExpect(MEAL_TO_MATCHER.contentJson(createTo(meal5, true), createTo(meal1, false)));
     }
 
     @Test
-    void filterAll() throws Exception {
+    void getBetweenAll() throws Exception {
         perform(MockMvcRequestBuilders.get(REST_URL + "filter?startDate=&endTime="))
                 .andExpect(status().isOk())
                 .andExpect(MEAL_TO_MATCHER.contentJson(getTos(meals, user.getCaloriesPerDay())));

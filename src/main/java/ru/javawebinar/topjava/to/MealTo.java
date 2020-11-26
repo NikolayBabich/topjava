@@ -48,12 +48,12 @@ public class MealTo {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        MealTo that = (MealTo) o;
-        return calories == that.calories &&
-                excess == that.excess &&
-                Objects.equals(id, that.id) &&
-                Objects.equals(dateTime, that.dateTime) &&
-                Objects.equals(description, that.description);
+        MealTo mealTo = (MealTo) o;
+        return calories == mealTo.calories &&
+                excess == mealTo.excess &&
+                id.equals(mealTo.id) &&
+                dateTime.equals(mealTo.dateTime) &&
+                description.equals(mealTo.description);
     }
 
     @Override
