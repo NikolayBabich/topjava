@@ -26,11 +26,7 @@ function deleteRow(id) {
         url: ctx.ajaxUrl + id,
         type: "DELETE"
     }).done(function () {
-        if (~ctx.ajaxUrl.indexOf("meals")) {
-            updateFilteredTable();
-        } else {
-            updateTable();
-        }
+        ctx.updateFunc();
         successNoty("Deleted");
     });
 }
@@ -52,11 +48,7 @@ function save() {
         data: form.serialize()
     }).done(function () {
         $("#editRow").modal("hide");
-        if (~ctx.ajaxUrl.indexOf("meals")) {
-            updateFilteredTable();
-        } else {
-            updateTable();
-        }
+        ctx.updateFunc();
         successNoty("Saved");
     });
 }

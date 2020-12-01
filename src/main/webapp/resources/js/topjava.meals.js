@@ -31,7 +31,8 @@ $(function () {
                     "desc"
                 ]
             ]
-        })
+        }),
+        updateFunc: updateFilteredTable
     };
     makeEditable();
 });

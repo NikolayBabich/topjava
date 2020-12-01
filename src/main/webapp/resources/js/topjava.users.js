@@ -1,4 +1,4 @@
-var ctx;
+let ctx;
 
 // $(document).ready(function () {
 $(function () {
@@ -39,25 +39,23 @@ $(function () {
                     "asc"
                 ]
             ]
-        })
+        }),
+        updateFunc: updateTable
     };
     makeEditable();
-    $("tr").each(function () {
-        const id = $(this).attr("id");
-        if (typeof id !== typeof undefined && id !== false) {
-            toggleEnabled(id);
-        }
-    });
 });
 
-function toggleEnabled(id) {
-    const tr = $("tr#" + id);
-    const enabled = tr.find(".enabled").prop("checked");
+function toggleEnabled(checkBox, id) {
+    const enabled = checkBox.prop("checked");
     $.ajax({
         type: "POST",
         url: ctx.ajaxUrl + id,
-        data: "enabled=" + enabled
+        data: {enabled: enabled}
     }).done(function () {
-        tr.attr("data-userEnabled", enabled);
+        $("tr#" + id).attr("data-userEnabled", enabled);
+        const text = enabled ? "enabled " : "disabled ";
+        successNoty("User " + text);
+    }).fail(function () {
+        checkBox.prop("checked", !enabled);
     });
 }
