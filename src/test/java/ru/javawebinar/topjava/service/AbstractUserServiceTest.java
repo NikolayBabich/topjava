@@ -19,6 +19,7 @@ import static ru.javawebinar.topjava.UserTestData.NOT_FOUND;
 import static ru.javawebinar.topjava.UserTestData.USER_ID;
 import static ru.javawebinar.topjava.UserTestData.USER_MATCHER;
 import static ru.javawebinar.topjava.UserTestData.admin;
+import static ru.javawebinar.topjava.UserTestData.getDisabled;
 import static ru.javawebinar.topjava.UserTestData.getNew;
 import static ru.javawebinar.topjava.UserTestData.getUpdated;
 import static ru.javawebinar.topjava.UserTestData.user;
@@ -92,5 +93,11 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
         validateRootCause(() -> service.create(new User(null, "User", "mail@yandex.ru", "  ", Role.USER)), ConstraintViolationException.class);
         validateRootCause(() -> service.create(new User(null, "User", "mail@yandex.ru", "password", 9, true, new Date(), Set.of())), ConstraintViolationException.class);
         validateRootCause(() -> service.create(new User(null, "User", "mail@yandex.ru", "password", 10001, true, new Date(), Set.of())), ConstraintViolationException.class);
+    }
+
+    @Test
+    void enable() {
+        service.enable(USER_ID, false);
+        USER_MATCHER.assertMatch(service.get(USER_ID), getDisabled());
     }
 }

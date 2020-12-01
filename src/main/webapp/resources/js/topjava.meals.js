@@ -1,4 +1,4 @@
-var ctx;
+let ctx;
 
 $(function () {
     ctx = {
@@ -35,3 +35,16 @@ $(function () {
     };
     makeEditable();
 });
+
+function updateFilteredTable() {
+    $.ajax({
+        type: "GET",
+        url: ctx.ajaxUrl + "filter",
+        data: $("#filter").serialize()
+    }).done(updateTableByData);
+}
+
+function clearFilter() {
+    $("#filter")[0].reset();
+    $.get(ctx.ajaxUrl, updateTableByData);
+}

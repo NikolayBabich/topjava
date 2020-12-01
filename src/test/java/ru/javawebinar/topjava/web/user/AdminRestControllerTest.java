@@ -19,6 +19,7 @@ import static ru.javawebinar.topjava.UserTestData.ADMIN_ID;
 import static ru.javawebinar.topjava.UserTestData.USER_ID;
 import static ru.javawebinar.topjava.UserTestData.USER_MATCHER;
 import static ru.javawebinar.topjava.UserTestData.admin;
+import static ru.javawebinar.topjava.UserTestData.getDisabled;
 import static ru.javawebinar.topjava.UserTestData.getNew;
 import static ru.javawebinar.topjava.UserTestData.getUpdated;
 import static ru.javawebinar.topjava.UserTestData.user;
@@ -60,8 +61,8 @@ class AdminRestControllerTest extends AbstractControllerTest {
     void update() throws Exception {
         User updated = getUpdated();
         perform(MockMvcRequestBuilders.put(REST_URL + USER_ID)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(JsonUtil.writeValue(updated)))
+                                      .contentType(MediaType.APPLICATION_JSON)
+                                      .content(JsonUtil.writeValue(updated)))
                 .andExpect(status().isNoContent());
 
         USER_MATCHER.assertMatch(userService.get(USER_ID), updated);
@@ -71,8 +72,8 @@ class AdminRestControllerTest extends AbstractControllerTest {
     void createWithLocation() throws Exception {
         User newUser = getNew();
         ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL)
-                                               .contentType(MediaType.APPLICATION_JSON)
-                                               .content(JsonUtil.writeValue(newUser)))
+                                                             .contentType(MediaType.APPLICATION_JSON)
+                                                             .content(JsonUtil.writeValue(newUser)))
                 .andExpect(status().isCreated());
 
         User created = readFromJson(action, User.class);
@@ -88,5 +89,16 @@ class AdminRestControllerTest extends AbstractControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(USER_MATCHER.contentJson(admin, user));
+    }
+
+    @Test
+    void enable() throws Exception {
+        perform(MockMvcRequestBuilders.post(REST_URL + "enable/" + USER_ID)
+                                      .param("enabled", "false"))
+                .andDo(print())
+                .andExpect(status().isNoContent());
+
+        perform(MockMvcRequestBuilders.get(REST_URL + USER_ID))
+                .andExpect(USER_MATCHER.contentJson(getDisabled()));
     }
 }

@@ -42,4 +42,22 @@ $(function () {
         })
     };
     makeEditable();
+    $("tr").each(function () {
+        const id = $(this).attr("id");
+        if (typeof id !== typeof undefined && id !== false) {
+            toggleEnabled(id);
+        }
+    });
 });
+
+function toggleEnabled(id) {
+    const tr = $("tr#" + id);
+    const enabled = tr.find(".enabled").prop("checked");
+    $.ajax({
+        type: "POST",
+        url: ctx.ajaxUrl + id,
+        data: "enabled=" + enabled
+    }).done(function () {
+        tr.attr("data-userEnabled", enabled);
+    });
+}

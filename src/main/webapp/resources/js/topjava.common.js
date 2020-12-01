@@ -1,4 +1,4 @@
-var form;
+let form;
 
 function makeEditable() {
     form = $('#detailsForm');
@@ -8,7 +8,7 @@ function makeEditable() {
         }
     });
 
-    $(document).ajaxError(function (event, jqXHR, options, jsExc) {
+    $(document).ajaxError(function (event, jqXHR) {
         failNoty(jqXHR);
     });
 
@@ -26,15 +26,23 @@ function deleteRow(id) {
         url: ctx.ajaxUrl + id,
         type: "DELETE"
     }).done(function () {
-        updateTable();
+        if (~ctx.ajaxUrl.indexOf("meals")) {
+            updateFilteredTable();
+        } else {
+            updateTable();
+        }
         successNoty("Deleted");
     });
 }
 
 function updateTable() {
     $.get(ctx.ajaxUrl, function (data) {
-        ctx.datatableApi.clear().rows.add(data).draw();
-    });
+        updateTableByData(data);
+    })
+}
+
+function updateTableByData(data) {
+    ctx.datatableApi.clear().rows.add(data).draw();
 }
 
 function save() {
@@ -44,12 +52,16 @@ function save() {
         data: form.serialize()
     }).done(function () {
         $("#editRow").modal("hide");
-        updateTable();
+        if (~ctx.ajaxUrl.indexOf("meals")) {
+            updateFilteredTable();
+        } else {
+            updateTable();
+        }
         successNoty("Saved");
     });
 }
 
-var failedNote;
+let failedNote;
 
 function closeNoty() {
     if (failedNote) {
