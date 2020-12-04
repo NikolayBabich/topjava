@@ -75,8 +75,8 @@ public class AdminRestController extends AbstractUserController {
     }
 
     @Override
-    @GetMapping(path = "/with-meals", produces = MediaType.APPLICATION_JSON_VALUE)
-    public User getWithMeals(@RequestParam int id) {
+    @GetMapping(path = "/{id}/with-meals", produces = MediaType.APPLICATION_JSON_VALUE)
+    public User getWithMeals(@PathVariable int id) {
         return super.getWithMeals(id);
     }
 }
