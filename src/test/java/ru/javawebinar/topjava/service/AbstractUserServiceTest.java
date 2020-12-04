@@ -13,7 +13,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static ru.javawebinar.topjava.UserTestData.ADMIN_ID;
 import static ru.javawebinar.topjava.UserTestData.NOT_FOUND;
 import static ru.javawebinar.topjava.UserTestData.USER_ID;
@@ -92,5 +94,13 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
         validateRootCause(() -> service.create(new User(null, "User", "mail@yandex.ru", "  ", Role.USER)), ConstraintViolationException.class);
         validateRootCause(() -> service.create(new User(null, "User", "mail@yandex.ru", "password", 9, true, new Date(), Set.of())), ConstraintViolationException.class);
         validateRootCause(() -> service.create(new User(null, "User", "mail@yandex.ru", "password", 10001, true, new Date(), Set.of())), ConstraintViolationException.class);
+    }
+
+    @Test
+    void enable() {
+        service.enable(USER_ID, false);
+        assertFalse(service.get(USER_ID).isEnabled());
+        service.enable(USER_ID, true);
+        assertTrue(service.get(USER_ID).isEnabled());
     }
 }
