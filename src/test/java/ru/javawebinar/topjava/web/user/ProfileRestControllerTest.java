@@ -6,6 +6,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.service.UserService;
+import ru.javawebinar.topjava.to.UserTo;
+import ru.javawebinar.topjava.util.UserUtil;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
 import ru.javawebinar.topjava.web.json.JsonUtil;
 
@@ -15,7 +17,6 @@ import static ru.javawebinar.topjava.UserTestData.USER_ID;
 import static ru.javawebinar.topjava.UserTestData.USER_MATCHER;
 import static ru.javawebinar.topjava.UserTestData.USER_WITH_MEALS_MATCHER;
 import static ru.javawebinar.topjava.UserTestData.admin;
-import static ru.javawebinar.topjava.UserTestData.getUpdated;
 import static ru.javawebinar.topjava.UserTestData.user;
 import static ru.javawebinar.topjava.web.user.ProfileRestController.REST_URL;
 
@@ -41,14 +42,14 @@ class ProfileRestControllerTest extends AbstractControllerTest {
 
     @Test
     void update() throws Exception {
-        User updated = getUpdated();
+        UserTo updatedTo = new UserTo(null, "newName", "newemail@ya.ru", "newPassword");
         perform(MockMvcRequestBuilders.put(REST_URL)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(JsonUtil.writeValue(updated)))
+                                      .contentType(MediaType.APPLICATION_JSON)
+                                      .content(JsonUtil.writeValue(updatedTo)))
                 .andDo(print())
                 .andExpect(status().isNoContent());
 
-        USER_MATCHER.assertMatch(userService.get(USER_ID), updated);
+        USER_MATCHER.assertMatch(userService.get(USER_ID), UserUtil.updateFromTo(new User(user), updatedTo));
     }
 
     @Test

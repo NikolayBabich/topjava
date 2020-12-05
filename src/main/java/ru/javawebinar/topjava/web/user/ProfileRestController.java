@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import ru.javawebinar.topjava.model.User;
+import ru.javawebinar.topjava.to.UserTo;
 
 import static ru.javawebinar.topjava.web.SecurityUtil.authUserId;
 
@@ -31,8 +32,8 @@ public class ProfileRestController extends AbstractUserController {
 
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@RequestBody User user) {
-        super.update(user, authUserId());
+    public void update(@RequestBody UserTo userTo) {
+        super.update(userTo, authUserId());
     }
 
     @GetMapping("/text")

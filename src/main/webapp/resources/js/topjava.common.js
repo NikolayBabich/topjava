@@ -2,7 +2,7 @@ var form;
 
 function makeEditable() {
     form = $('#detailsForm');
-    $(document).ajaxError(function (event, jqXHR, options, jsExc) {
+    $(document).ajaxError(function (event, jqXHR) {
         failNoty(jqXHR);
     });
 
@@ -13,6 +13,16 @@ function makeEditable() {
 function add() {
     form.find(":input").val("");
     $("#editRow").modal();
+}
+
+function updateRow(id) {
+    form.find(":input").val("");
+    $.get(ctx.ajaxUrl + id, function (data) {
+        $.each(data, function (key, value) {
+            form.find("input[name='" + key + "']").val(value);
+        });
+        $('#editRow').modal();
+    });
 }
 
 function deleteRow(id) {
