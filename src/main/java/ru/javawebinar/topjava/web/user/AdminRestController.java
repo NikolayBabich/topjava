@@ -74,6 +74,7 @@ public class AdminRestController extends AbstractUserController {
         super.enable(id, enabled);
     }
 
+    @Override
     @GetMapping("/{id}/with-meals")
     public User getWithMeals(@PathVariable int id) {
         return super.getWithMeals(id);
