@@ -41,7 +41,7 @@ public class Meal extends AbstractBaseEntity {
 
     @Column(name = "date_time", nullable = false)
     @NotNull
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    @DateTimeFormat(pattern = "dd.MM.yyyy HH:mm")
     private LocalDateTime dateTime;
 
     @Column(name = "description", nullable = false)

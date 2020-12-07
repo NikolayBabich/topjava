@@ -63,4 +63,23 @@ $(function () {
         updateTable: updateFilteredTable
     };
     makeEditable();
+    dateTimePickerConfig();
 });
+
+function dateTimePickerConfig() {
+    $.datetimepicker.setLocale('ru');
+
+    $("#dateTime").datetimepicker({
+        format: 'd.m.Y H:i'
+    })
+
+    $("#startDate, #endDate").datetimepicker({
+        timepicker: false,
+        format: 'd.m.Y'
+    })
+
+    $("#startTime, #endTime").datetimepicker({
+        datepicker: false,
+        format: 'H:i'
+    })
+}
