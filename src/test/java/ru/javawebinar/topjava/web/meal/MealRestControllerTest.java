@@ -62,6 +62,7 @@ class MealRestControllerTest extends AbstractControllerTest {
                                       .contentType(MediaType.APPLICATION_JSON)
                                       .with(userHttpBasic(user))
                                       .content(JsonUtil.writeValue(updated)))
+                .andDo(print())
                 .andExpect(status().isNoContent());
 
         MEAL_MATCHER.assertMatch(mealService.get(MEAL1_ID, USER_ID), updated);
