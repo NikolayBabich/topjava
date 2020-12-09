@@ -21,7 +21,7 @@ function updateRow(id) {
     $("#modalTitle").html(i18n["editTitle"]);
     $.get(ctx.ajaxUrl + id, function (data) {
         $.each(data, function (key, value) {
-            const newValue = (key === "dateTime") ? value.replace('T', ' ').substring(0, 16) : value;
+            const newValue = (key === "dateTime") ? formatDateTime(value) : value;
             form.find("input[name='" + key + "']").val(newValue);
         });
         $('#editRow').modal();

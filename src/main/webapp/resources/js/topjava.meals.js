@@ -13,6 +13,10 @@ function clearFilter() {
     $.get(mealAjaxUrl, updateTableByData);
 }
 
+function formatDateTime(str) {
+    return str.replace('T', ' ').substring(0, 16);
+}
+
 $(function () {
     ctx = {
         ajaxUrl: mealAjaxUrl,
@@ -28,7 +32,7 @@ $(function () {
                     "data": "dateTime",
                     "render": function (data, type) {
                         if (type === "display") {
-                            return data.replace('T', ' ').substring(0, 16);
+                            return formatDateTime(data);
                         }
                         return data;
                     }
@@ -65,22 +69,6 @@ $(function () {
     makeEditable();
     dateTimePickerConfig();
 });
-
-// function dateTimePickerConfig() {
-//     $("#dateTime").datetimepicker({
-//         format: 'Y-m-d H:i'
-//     })
-//
-//     $("#startDate, #endDate").datetimepicker({
-//         timepicker: false,
-//         format: 'Y-m-d'
-//     })
-//
-//     $("#startTime, #endTime").datetimepicker({
-//         datepicker: false,
-//         format: 'H:i'
-//     })
-// }
 
 function dateTimePickerConfig() {
     $("#dateTime").datetimepicker({
