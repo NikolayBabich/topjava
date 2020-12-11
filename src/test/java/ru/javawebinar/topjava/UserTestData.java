@@ -14,13 +14,13 @@ import static ru.javawebinar.topjava.MealTestData.meals;
 import static ru.javawebinar.topjava.model.AbstractBaseEntity.START_SEQ;
 
 public class UserTestData {
-    public static final TestMatcher<User> USER_MATCHER = TestMatcher.usingIgnoringFieldsComparator(User.class, "registered", "meals");
+    public static final TestMatcher<User> USER_MATCHER = TestMatcher.usingIgnoringFieldsComparator(User.class, "registered", "meals", "password");
 
     public static TestMatcher<User> USER_WITH_MEALS_MATCHER =
             TestMatcher.usingAssertions(
                     User.class,
                     (a, e) -> assertThat(a).usingRecursiveComparison()
-                                           .ignoringFields("registered", "meals.user")
+                                           .ignoringFields("registered", "meals.user", "password")
                                            .isEqualTo(e),
                     (a, e) -> {
                         throw new UnsupportedOperationException();
