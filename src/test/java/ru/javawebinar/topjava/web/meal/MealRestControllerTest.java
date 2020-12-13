@@ -89,6 +89,18 @@ class MealRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    void updateNotValidCalories() throws Exception {
+        Meal updated = getUpdated();
+        updated.setCalories(5555);
+        perform(MockMvcRequestBuilders.put(REST_URL + MEAL1_ID).contentType(MediaType.APPLICATION_JSON)
+                                      .content(JsonUtil.writeValue(updated))
+                                      .with(userHttpBasic(user)))
+                .andExpect(status().isUnprocessableEntity());
+
+        MEAL_MATCHER.assertMatch(mealService.get(MEAL1_ID, USER_ID), meal1);
+    }
+
+    @Test
     void createWithLocation() throws Exception {
         Meal newMeal = getNew();
         ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL)

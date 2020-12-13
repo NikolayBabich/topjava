@@ -7,6 +7,8 @@ import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.util.StringUtils;
+import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,6 +22,7 @@ import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import javax.servlet.http.HttpServletRequest;
 
+import static ru.javawebinar.topjava.util.ValidationUtil.getErrorResponseMsg;
 import static ru.javawebinar.topjava.util.exception.ErrorType.APP_ERROR;
 import static ru.javawebinar.topjava.util.exception.ErrorType.DATA_ERROR;
 import static ru.javawebinar.topjava.util.exception.ErrorType.DATA_NOT_FOUND;
@@ -28,7 +31,9 @@ import static ru.javawebinar.topjava.util.exception.ErrorType.VALIDATION_ERROR;
 @RestControllerAdvice(annotations = RestController.class)
 @Order(Ordered.HIGHEST_PRECEDENCE + 5)
 public class ExceptionInfoHandler {
-    private static Logger log = LoggerFactory.getLogger(ExceptionInfoHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(ExceptionInfoHandler.class);
+    public static final String DUPLICATE_EMAIL_MSG = "User with this email already exists";
+    public static final String DUPLICATE_DATETIME_MSG = "Meal at this date&time already exists";
 
     //  http://stackoverflow.com/a/22358422/548473
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
@@ -40,11 +45,16 @@ public class ExceptionInfoHandler {
     @ResponseStatus(HttpStatus.CONFLICT)  // 409
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ErrorInfo conflict(HttpServletRequest req, DataIntegrityViolationException e) {
-        return logAndGetErrorInfo(req, e, true, DATA_ERROR);
+        boolean exceptionFromUsers = ValidationUtil.getRootCause(e).getMessage().toLowerCase().contains("users");
+        String duplicateMsg = exceptionFromUsers ? DUPLICATE_EMAIL_MSG : DUPLICATE_DATETIME_MSG;
+        return logAndGetErrorInfo(req, e, true, DATA_ERROR, duplicateMsg);
     }
 
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)  // 422
-    @ExceptionHandler({IllegalRequestDataException.class, MethodArgumentTypeMismatchException.class, HttpMessageNotReadableException.class})
+    @ExceptionHandler({
+            IllegalRequestDataException.class, MethodArgumentTypeMismatchException.class,
+            HttpMessageNotReadableException.class, BindException.class
+    })
     public ErrorInfo illegalRequestDataError(HttpServletRequest req, Exception e) {
         return logAndGetErrorInfo(req, e, false, VALIDATION_ERROR);
     }
@@ -55,14 +65,25 @@ public class ExceptionInfoHandler {
         return logAndGetErrorInfo(req, e, true, APP_ERROR);
     }
 
-    //    https://stackoverflow.com/questions/538870/should-private-helper-methods-be-static-if-they-can-be-static
     private static ErrorInfo logAndGetErrorInfo(HttpServletRequest req, Exception e, boolean logException, ErrorType errorType) {
+        return logAndGetErrorInfo(req, e, logException, errorType, "");
+    }
+
+    private static ErrorInfo logAndGetErrorInfo(HttpServletRequest req, Exception e, boolean logException,
+                                                ErrorType errorType, String duplicateEntityDetail) {
         Throwable rootCause = ValidationUtil.getRootCause(e);
+        String detail = null;
+        if (e instanceof BindException) {
+            detail = getErrorResponseMsg(((BindException) e).getBindingResult());
+        }
+        if (e instanceof DataIntegrityViolationException) {
+            detail = duplicateEntityDetail;
+        }
         if (logException) {
             log.error(errorType + " at request " + req.getRequestURL(), rootCause);
         } else {
             log.warn("{} at request  {}: {}", errorType, req.getRequestURL(), rootCause.toString());
         }
-        return new ErrorInfo(req.getRequestURL(), errorType, rootCause.toString());
+        return new ErrorInfo(req.getRequestURL(), errorType, StringUtils.hasText(detail) ? detail : rootCause.toString());
     }
 }

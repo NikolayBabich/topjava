@@ -20,7 +20,10 @@ function clearFilter() {
 $.ajaxSetup({
     converters: {
         "text json": function (stringData) {
-            var json = JSON.parse(stringData);
+            const json = JSON.parse(stringData);
+            if (json.hasOwnProperty('type') && json.hasOwnProperty('detail')) {
+                return json;
+            }
             if (typeof json === 'object') {
                 $(json).each(function () {
                     this.dateTime = this.dateTime.substr(0, 16).replace('T', ' ');

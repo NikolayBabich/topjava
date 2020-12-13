@@ -7,9 +7,10 @@
 <%@ attribute name="inputType" required="false" description="Input type" %>
 
 <spring:bind path="${name}">
-    <div class="form-group ${status.error ? 'error' : '' }">
+    <c:set var="isError" value='${status.error || (duplicateError && "email".equals(name))}'/>
+    <div class="form-group ${isError ? 'error' : '' }">
         <label class="col-form-label"><spring:message code="${labelCode}"/></label>
-        <form:input path="${name}" type="${(empty inputType)?'text':inputType}" class="form-control ${status.error ? 'is-invalid' : '' }"/>
-        <div class="invalid-feedback">${status.errorMessage}</div>
+        <form:input path="${name}" type="${(empty inputType)?'text':inputType}" class="form-control ${isError ? 'is-invalid' : '' }"/>
+        <div class="invalid-feedback">${status.errorMessage}${duplicate}</div>
     </div>
 </spring:bind>
