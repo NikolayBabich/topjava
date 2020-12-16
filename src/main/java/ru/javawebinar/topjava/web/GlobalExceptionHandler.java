@@ -2,7 +2,6 @@ package ru.javawebinar.topjava.web;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -12,8 +11,6 @@ import ru.javawebinar.topjava.util.ValidationUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
-
-import static ru.javawebinar.topjava.web.ExceptionInfoHandler.DUPLICATE_EMAIL_MSG;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -30,17 +27,6 @@ public class GlobalExceptionHandler {
         mav.setStatus(httpStatus);
 
         // Interceptor is not invoked, put userTo
-        AuthorizedUser authorizedUser = SecurityUtil.safeGet();
-        if (authorizedUser != null) {
-            mav.addObject("userTo", authorizedUser.getUserTo());
-        }
-        return mav;
-    }
-
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ModelAndView duplicateEmailHandler(DataIntegrityViolationException e) {
-        ModelAndView mav = new ModelAndView("profile", Map.of("duplicateError", "true",
-                                                              "duplicate", DUPLICATE_EMAIL_MSG));
         AuthorizedUser authorizedUser = SecurityUtil.safeGet();
         if (authorizedUser != null) {
             mav.addObject("userTo", authorizedUser.getUserTo());

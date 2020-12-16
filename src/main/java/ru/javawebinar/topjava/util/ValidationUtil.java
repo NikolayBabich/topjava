@@ -10,6 +10,7 @@ import javax.validation.ConstraintViolationException;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -80,9 +81,9 @@ public class ValidationUtil {
         return result;
     }
 
-    public static String getErrorResponseMsg(BindingResult result) {
+    public static List<String> getErrorResponseMsg(BindingResult result) {
         return result.getFieldErrors().stream()
                      .map(fe -> String.format("[%s] %s", fe.getField(), fe.getDefaultMessage()))
-                     .collect(Collectors.joining("<br>"));
+                     .collect(Collectors.toList());
     }
 }

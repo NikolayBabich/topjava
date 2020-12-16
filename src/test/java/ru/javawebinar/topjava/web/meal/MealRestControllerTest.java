@@ -4,26 +4,22 @@ package ru.javawebinar.topjava.web.meal;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealService;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 import ru.javawebinar.topjava.web.AbstractControllerTest;
+import ru.javawebinar.topjava.web.ExceptionInfoHandler;
 import ru.javawebinar.topjava.web.json.JsonUtil;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static ru.javawebinar.topjava.MealTestData.ADMIN_MEAL_ID;
-import static ru.javawebinar.topjava.MealTestData.MEAL1_ID;
-import static ru.javawebinar.topjava.MealTestData.MEAL_MATCHER;
-import static ru.javawebinar.topjava.MealTestData.MEAL_TO_MATCHER;
-import static ru.javawebinar.topjava.MealTestData.getNew;
-import static ru.javawebinar.topjava.MealTestData.getUpdated;
-import static ru.javawebinar.topjava.MealTestData.meal1;
-import static ru.javawebinar.topjava.MealTestData.meal5;
-import static ru.javawebinar.topjava.MealTestData.meals;
+import static ru.javawebinar.topjava.MealTestData.*;
 import static ru.javawebinar.topjava.TestUtil.readFromJson;
 import static ru.javawebinar.topjava.TestUtil.userHttpBasic;
 import static ru.javawebinar.topjava.UserTestData.USER_ID;
@@ -101,6 +97,20 @@ class MealRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    @Transactional(propagation = Propagation.NEVER)
+    void updateWithDuplicateDateTime() throws Exception {
+        Meal updated = getUpdated();
+        updated.setDateTime(meal2.getDateTime());
+        MvcResult result = perform(MockMvcRequestBuilders.put(REST_URL + MEAL1_ID).contentType(MediaType.APPLICATION_JSON)
+                                                         .content(JsonUtil.writeValue(updated))
+                                                         .with(userHttpBasic(user)))
+                .andExpect(status().isConflict())
+                .andReturn();
+
+        assertMatchErrorMsg(result, ExceptionInfoHandler.DUPLICATE_DATETIME_MSG);
+    }
+
+    @Test
     void createWithLocation() throws Exception {
         Meal newMeal = getNew();
         ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL)
@@ -113,6 +123,21 @@ class MealRestControllerTest extends AbstractControllerTest {
         newMeal.setId(newId);
         MEAL_MATCHER.assertMatch(created, newMeal);
         MEAL_MATCHER.assertMatch(mealService.get(newId, USER_ID), newMeal);
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.NEVER)
+    void createWithDuplicateDateTime() throws Exception {
+        Meal newMeal = getNew();
+        newMeal.setDateTime(meal2.getDateTime());
+        MvcResult result = perform(MockMvcRequestBuilders.post(REST_URL)
+                                                         .contentType(MediaType.APPLICATION_JSON)
+                                                         .content(JsonUtil.writeValue(newMeal))
+                                                         .with(userHttpBasic(user)))
+                .andExpect(status().isConflict())
+                .andReturn();
+
+        assertMatchErrorMsg(result, ExceptionInfoHandler.DUPLICATE_DATETIME_MSG);
     }
 
     @Test

@@ -7,7 +7,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.util.StringUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -21,6 +21,8 @@ import ru.javawebinar.topjava.util.exception.IllegalRequestDataException;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
 
 import static ru.javawebinar.topjava.util.ValidationUtil.getErrorResponseMsg;
 import static ru.javawebinar.topjava.util.exception.ErrorType.APP_ERROR;
@@ -32,14 +34,14 @@ import static ru.javawebinar.topjava.util.exception.ErrorType.VALIDATION_ERROR;
 @Order(Ordered.HIGHEST_PRECEDENCE + 5)
 public class ExceptionInfoHandler {
     private static final Logger log = LoggerFactory.getLogger(ExceptionInfoHandler.class);
-    public static final String DUPLICATE_EMAIL_MSG = "User with this email already exists";
-    public static final String DUPLICATE_DATETIME_MSG = "Meal at this date&time already exists";
+    public static final String DUPLICATE_EMAIL_MSG = "[email] User with this email already exists";
+    public static final String DUPLICATE_DATETIME_MSG = "[dateTime] Meal at this date&time already exists";
 
     //  http://stackoverflow.com/a/22358422/548473
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
     @ExceptionHandler(NotFoundException.class)
     public ErrorInfo handleError(HttpServletRequest req, NotFoundException e) {
-        return logAndGetErrorInfo(req, e, false, DATA_NOT_FOUND);
+        return logAndGetErrorInfo(req, e, false, DATA_NOT_FOUND, e.getMessage());
     }
 
     @ResponseStatus(HttpStatus.CONFLICT)  // 409
@@ -56,7 +58,13 @@ public class ExceptionInfoHandler {
             HttpMessageNotReadableException.class, BindException.class
     })
     public ErrorInfo illegalRequestDataError(HttpServletRequest req, Exception e) {
-        return logAndGetErrorInfo(req, e, false, VALIDATION_ERROR);
+        List<String> details = new ArrayList<>();
+        if (e instanceof BindException) {
+            details.addAll(getErrorResponseMsg(((BindException) e).getBindingResult()));
+        } else {
+            details.add(ValidationUtil.getRootCause(e).getMessage());
+        }
+        return logAndGetErrorInfo(req, e, false, VALIDATION_ERROR, details.toArray(new String[0]));
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -65,25 +73,17 @@ public class ExceptionInfoHandler {
         return logAndGetErrorInfo(req, e, true, APP_ERROR);
     }
 
-    private static ErrorInfo logAndGetErrorInfo(HttpServletRequest req, Exception e, boolean logException, ErrorType errorType) {
-        return logAndGetErrorInfo(req, e, logException, errorType, "");
-    }
-
     private static ErrorInfo logAndGetErrorInfo(HttpServletRequest req, Exception e, boolean logException,
-                                                ErrorType errorType, String duplicateEntityDetail) {
+                                                ErrorType errorType, String... details) {
         Throwable rootCause = ValidationUtil.getRootCause(e);
-        String detail = null;
-        if (e instanceof BindException) {
-            detail = getErrorResponseMsg(((BindException) e).getBindingResult());
-        }
-        if (e instanceof DataIntegrityViolationException) {
-            detail = duplicateEntityDetail;
-        }
+
         if (logException) {
             log.error(errorType + " at request " + req.getRequestURL(), rootCause);
         } else {
             log.warn("{} at request  {}: {}", errorType, req.getRequestURL(), rootCause.toString());
         }
-        return new ErrorInfo(req.getRequestURL(), errorType, StringUtils.hasText(detail) ? detail : rootCause.toString());
+        return new ErrorInfo(req.getRequestURL(), errorType, ObjectUtils.isEmpty(details)
+                                                             ? new String[]{rootCause.toString()}
+                                                             : details);
     }
 }

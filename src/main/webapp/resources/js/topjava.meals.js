@@ -21,10 +21,7 @@ $.ajaxSetup({
     converters: {
         "text json": function (stringData) {
             const json = JSON.parse(stringData);
-            if (json.hasOwnProperty('type') && json.hasOwnProperty('detail')) {
-                return json;
-            }
-            if (typeof json === 'object') {
+            if (hasProperty(json, 'dateTime')) {
                 $(json).each(function () {
                     this.dateTime = this.dateTime.substr(0, 16).replace('T', ' ');
                 });
@@ -33,6 +30,10 @@ $.ajaxSetup({
         }
     }
 });
+
+function hasProperty(obj, prop) {
+    return (typeof obj === 'object') && (obj.hasOwnProperty(prop) || (obj.length > 0 && obj[0].hasOwnProperty(prop)));
+}
 
 $(function () {
     makeEditable({
