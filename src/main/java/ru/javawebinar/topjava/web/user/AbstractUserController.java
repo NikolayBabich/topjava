@@ -23,7 +23,7 @@ public abstract class AbstractUserController {
     private UserService service;
 
     @Autowired
-    EmailValidator validator;
+    private EmailValidator validator;
 
     @InitBinder
     protected void initBinder(WebDataBinder binder) {
