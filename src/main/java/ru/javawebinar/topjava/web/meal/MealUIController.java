@@ -15,11 +15,13 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.javawebinar.topjava.View;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.to.MealTo;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
+@ApiIgnore
 @RestController
 @RequestMapping(value = "/profile/meals", produces = MediaType.APPLICATION_JSON_VALUE)
 public class MealUIController extends AbstractMealController {
@@ -31,7 +33,7 @@ public class MealUIController extends AbstractMealController {
     }
 
     @Override
-    @GetMapping( "/{id}")
+    @GetMapping("/{id}")
     public Meal get(@PathVariable int id) {
         return super.get(id);
     }
